@@ -5,6 +5,7 @@ import {
 import {
   writeBatch, collection, doc, runTransaction, getDocs, getCountFromServer, query, where, serverTimestamp,
 } from 'firebase/firestore'
+import type { CollectionReference, DocumentData, DocumentReference, Query } from 'firebase/firestore'
 import { db } from '@/lib/firestore'
 import { useAuth } from '@/context/AuthContext'
 import { Badge } from '@/components/ui/badge'
@@ -140,10 +141,10 @@ export function WorkspaceDetail({ wsId, onDeleted, onNavigateMembers }: { wsId: 
   }
 
   const handleDeleteWorkspace = async () => {
-    const allRefs: ReturnType<typeof doc>[] = []
+    const allRefs: DocumentReference<DocumentData, DocumentData>[] = []
 
     // Only fetch docs when the collection is non-empty (saves reads on empty subcollections)
-    async function collectRefs(col: ReturnType<typeof collection> | ReturnType<typeof query>) {
+    async function collectRefs(col: CollectionReference<DocumentData, DocumentData> | Query<DocumentData, DocumentData>) {
       const { data } = await getCountFromServer(col)
       if (data().count === 0) return
       const snap = await getDocs(col)
